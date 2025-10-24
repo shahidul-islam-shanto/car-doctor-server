@@ -22,10 +22,6 @@ app.get("/", (req, res) => {
   res.send("this server is running");
 });
 
-// name:
-// password:
-console.log(process.env.DB_USER);
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -37,6 +33,32 @@ const client = new MongoClient(uri, {
   },
 });
 
+/**custom middleware start */
+const logger = async (req, res, next) => {
+  console.log("called:", req.host, req.originalUrl);
+  next();
+};
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies?.token;
+  console.log("value of token middleware", token);
+
+  if (!token) {
+    return res.status(401).send({ message: "Not authorized" });
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    // error
+    if (err) {
+      return res.status(401).send({ message: "unauthorized" });
+    }
+    // if token is valid then it would be decoded
+    console.log("value in the token", decoded);
+    req.user = decoded;
+    next();
+  });
+};
+/**custom middleware end */
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -46,7 +68,7 @@ async function run() {
     const bookingCollection = client.db("carDoctor").collection("bookings");
 
     /** jwt token auth related api start */
-    app.post("/jwt", async (req, res) => {
+    app.post("/jwt", logger, async (req, res) => {
       const user = req.body;
       // console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -63,7 +85,7 @@ async function run() {
     /** jwt token auth related api end */
 
     /** service related api start */
-    app.get("/services", async (req, res) => {
+    app.get("/services", logger, async (req, res) => {
       const cursor = serviceCollection.find();
       const result = await cursor.toArray();
       res.send(result);
@@ -87,9 +109,11 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", logger, verifyToken, async (req, res) => {
       console.log(req.query.email);
-      console.log("tok tok token", req.cookies.token);
+      console.log("form valid token", req.user);
+
+      // console.log("tok tok token", req.cookies.token);
 
       let query = {};
       if (req.query?.email) {
