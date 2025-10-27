@@ -10,7 +10,11 @@ const port = process.env.PORT || 5000;
 // // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      // "http://localhost:5173",
+      "https://car-doctor-client-b927e.web.app",
+      "https://car-doctor-client-b927e.firebaseapp.com",
+    ],
     credentials: true,
   })
 );
@@ -52,7 +56,7 @@ const verifyToken = (req, res, next) => {
       return res.status(401).send({ message: "unauthorized" });
     }
     // if token is valid then it would be decoded
-    console.log("value in the token", decoded);
+    // console.log("value in the token", decoded);
     req.user = decoded;
     next();
   });
@@ -112,7 +116,9 @@ async function run() {
     app.get("/bookings", logger, verifyToken, async (req, res) => {
       console.log(req.query.email);
       console.log("form valid token", req.user);
-
+      if (req.query.email !== req.user.email) {
+        return res.status(403).send({ massage: "forbidden access" });
+      }
       // console.log("tok tok token", req.cookies.token);
 
       let query = {};
