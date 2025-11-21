@@ -8,16 +8,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // // middleware
-app.use(
-  cors({
-    origin: [
-      // "http://localhost:5173",
-      "https://car-doctor-client-b927e.web.app",
-      "https://car-doctor-client-b927e.firebaseapp.com",
-    ],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -38,29 +29,29 @@ const client = new MongoClient(uri, {
 });
 
 /**custom middleware start */
-const logger = async (req, res, next) => {
-  console.log("called:", req.host, req.originalUrl);
-  next();
-};
+// const logger = async (req, res, next) => {
+//   console.log("called:", req.host, req.originalUrl);
+//   next();
+// };
 
-const verifyToken = (req, res, next) => {
-  const token = req.cookies?.token;
-  console.log("value of token middleware", token);
+// const verifyToken = (req, res, next) => {
+//   const token = req.cookies?.token;
+//   console.log("value of token middleware", token);
 
-  if (!token) {
-    return res.status(401).send({ message: "Not authorized" });
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    // error
-    if (err) {
-      return res.status(401).send({ message: "unauthorized" });
-    }
-    // if token is valid then it would be decoded
-    // console.log("value in the token", decoded);
-    req.user = decoded;
-    next();
-  });
-};
+//   if (!token) {
+//     return res.status(401).send({ message: "Not authorized" });
+//   }
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//     // error
+//     if (err) {
+//       return res.status(401).send({ message: "unauthorized" });
+//     }
+//     // if token is valid then it would be decoded
+//     // console.log("value in the token", decoded);
+//     req.user = decoded;
+//     next();
+//   });
+// };
 /**custom middleware end */
 
 async function run() {
@@ -72,24 +63,24 @@ async function run() {
     const bookingCollection = client.db("carDoctor").collection("bookings");
 
     /** jwt token auth related api start */
-    app.post("/jwt", logger, async (req, res) => {
-      const user = req.body;
-      // console.log(user);
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "1h",
-      });
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: false, // production এ true করবে (https)
-          sameSite: "lax",
-        })
-        .send({ success: true });
-    });
+    // app.post("/jwt", logger, async (req, res) => {
+    //   const user = req.body;
+    //   // console.log(user);
+    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    //     expiresIn: "1h",
+    //   });
+    //   res
+    //     .cookie("token", token, {
+    //       httpOnly: true,
+    //       secure: false, // production এ true করবে (https)
+    //       sameSite: "lax",
+    //     })
+    //     .send({ success: true });
+    // });
     /** jwt token auth related api end */
 
     /** service related api start */
-    app.get("/services", logger, async (req, res) => {
+    app.get("/services", async (req, res) => {
       const cursor = serviceCollection.find();
       const result = await cursor.toArray();
       res.send(result);
@@ -99,7 +90,6 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const options = {
-        // Include only the `title` and `imdb` fields in the returned document
         projection: { title: 1, price: 1, service_id: 1, img: 1 },
       };
       const result = await serviceCollection.findOne(query, options);
@@ -113,14 +103,13 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/bookings", logger, verifyToken, async (req, res) => {
+    app.get("/bookings", async (req, res) => {
       console.log(req.query.email);
-      console.log("form valid token", req.user);
-      if (req.query.email !== req.user.email) {
-        return res.status(403).send({ massage: "forbidden access" });
-      }
+      // console.log("form valid token", req.user);
+      // if (req.query.email !== req.user.email) {
+      //   return res.status(403).send({ massage: "forbidden access" });
+      // }
       // console.log("tok tok token", req.cookies.token);
-
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email }; //set email
