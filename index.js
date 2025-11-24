@@ -39,24 +39,24 @@ const client = new MongoClient(uri, {
 //   next();
 // };
 
-// const verifyToken = (req, res, next) => {
-//   const token = req.cookies?.token;
-//   console.log("value of token middleware", token);
+const verifyToken = (req, res, next) => {
+  const token = req.cookies?.token;
+  console.log("value of token middleware", token);
 
-//   if (!token) {
-//     return res.status(401).send({ message: "Not authorized" });
-//   }
-//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-//     // error
-//     if (err) {
-//       return res.status(401).send({ message: "unauthorized" });
-//     }
-//     // if token is valid then it would be decoded
-//     // console.log("value in the token", decoded);
-//     req.user = decoded;
-//     next();
-//   });
-// };
+  if (!token) {
+    return res.status(401).send({ message: "Not authorized" });
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    // error
+    if (err) {
+      return res.status(401).send({ message: "unauthorized" });
+    }
+    // if token is valid then it would be decoded
+    // console.log("value in the token", decoded);
+    req.user = decoded;
+    next();
+  });
+};
 /**custom middleware end */
 
 async function run() {
@@ -108,13 +108,13 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", verifyToken, async (req, res) => {
       console.log(req.query.email);
       // console.log("form valid token", req.user);
-      // if (req.query.email !== req.user.email) {
-      //   return res.status(403).send({ massage: "forbidden access" });
-      // }
-      console.log("tok tok token", req.cookies.token);
+      if (req.query.email !== req.user.email) {
+        return res.status(403).send({ massage: "forbidden access" });
+      }
+      // console.log("tok tok token", req.cookies.token);
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email }; //set email
