@@ -8,7 +8,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // // middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -63,20 +68,20 @@ async function run() {
     const bookingCollection = client.db("carDoctor").collection("bookings");
 
     /** jwt token auth related api start */
-    // app.post("/jwt", logger, async (req, res) => {
-    //   const user = req.body;
-    //   // console.log(user);
-    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    //     expiresIn: "1h",
-    //   });
-    //   res
-    //     .cookie("token", token, {
-    //       httpOnly: true,
-    //       secure: false, // production এ true করবে (https)
-    //       sameSite: "lax",
-    //     })
-    //     .send({ success: true });
-    // });
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      // console.log(user);
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        })
+        .send({ success: true });
+    });
     /** jwt token auth related api end */
 
     /** service related api start */
@@ -109,7 +114,7 @@ async function run() {
       // if (req.query.email !== req.user.email) {
       //   return res.status(403).send({ massage: "forbidden access" });
       // }
-      // console.log("tok tok token", req.cookies.token);
+      console.log("tok tok token", req.cookies.token);
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email }; //set email
