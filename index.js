@@ -40,7 +40,7 @@ const client = new MongoClient(uri, {
 // };
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies?.token;
+  const token = req?.cookies?.token;
   console.log("value of token middleware", token);
 
   if (!token) {
