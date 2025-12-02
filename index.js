@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
-const port = process.env.PORT || 5000;
+// const port = process.env.PORT || 5000;
 
 // // middleware
 app.use(
@@ -180,8 +180,8 @@ module.exports = app;
 // const jwt = require("jsonwebtoken");
 // const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // require("dotenv").config();
-
 // const app = express();
+// const port = process.env.PORT || 5000;
 
 // // middleware
 // app.use(
@@ -203,23 +203,34 @@ module.exports = app;
 // });
 
 // // MongoDB connection (Serverless SAFE)
-// let client;
-// async function connectDB() {
-//   if (!client) {
-//     client = new MongoClient(
-//       `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
-//       {
-//         serverApi: {
-//           version: ServerApiVersion.v1,
-//           strict: true,
-//           deprecationErrors: true,
-//         },
-//       }
-//     );
-//     await client.connect();
-//   }
-//   return client;
-// }
+// // let client;
+// // async function connectDB() {
+// //   if (!client) {
+// //     client = new MongoClient(
+// //       `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
+// //       {
+// //         serverApi: {
+// //           version: ServerApiVersion.v1,
+// //           strict: true,
+// //           deprecationErrors: true,
+// //         },
+// //       }
+// //     );
+// //     await client.connect();
+// //   }
+// //   return client;
+// // }
+
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
 
 // // JWT verify middleware
 // const verifyToken = (req, res, next) => {
