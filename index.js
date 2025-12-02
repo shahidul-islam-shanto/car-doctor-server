@@ -5,15 +5,15 @@ const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
-// const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 // // middleware
 app.use(
   cors({
     origin: [
-      // "http://localhost:5173",
-      "https://car-doctor-client-b927e.web.app",
-      "https://car-doctor-client-b927e.firebaseapp.com",
+      "http://localhost:5173",
+      // "https://car-doctor-client-b927e.web.app",
+      // "https://car-doctor-client-b927e.firebaseapp.com",
     ],
     credentials: true,
   })
@@ -26,16 +26,29 @@ app.get("/", (req, res) => {
   res.send("this server is running");
 });
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
+
+//MongoDB connection (Serverless SAFE)
+
+const client = new MongoClient(
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aazhdn7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
+  {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+  }
+);
 
 /**custom middleware start */
 // const logger = async (req, res, next) => {
@@ -220,8 +233,6 @@ module.exports = app;
 // //   }
 // //   return client;
 // // }
-
-
 
 // // JWT verify middleware
 // const verifyToken = (req, res, next) => {
