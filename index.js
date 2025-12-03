@@ -12,9 +12,9 @@ app.use(
   cors({
     origin: [
       // "http://localhost:5173",
-      "https://car-doctor-client-b927e.web.app",
-      "https://car-doctor-client-b927e.firebaseapp.com",
-      "https://car-cure-client.vercel.app",
+      "https://car-doctor-client-b927e.web.app/",
+      "https://car-doctor-client-b927e.firebaseapp.com/",
+      "https://car-cure-client.vercel.app/",
     ],
     credentials: true,
   })
@@ -63,11 +63,16 @@ const verifyToken = (req, res, next) => {
   });
 };
 /**custom middleware end */
-
+let isConnected = false;
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
+
+    if (!isConnected) {
+      await client.connect();
+      isConnected = true;
+    }
 
     const serviceCollection = client.db("carDoctor").collection("services");
     const bookingCollection = client.db("carDoctor").collection("bookings");
@@ -83,7 +88,7 @@ async function run() {
         .cookie("token", token, {
           httpOnly: true,
           secure: true,
-          sameSite: "lax",
+          sameSite: "none",
         })
         .send({ success: true });
     });
@@ -167,9 +172,9 @@ async function run() {
 }
 run().catch(console.dir);
 
-// app.listen(port, () => {
-//   console.log(`Example app listening on port ${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
 
 module.exports = app;
 
