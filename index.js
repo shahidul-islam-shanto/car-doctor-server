@@ -12,9 +12,9 @@ app.use(
   cors({
     origin: [
       // "http://localhost:5173",
-      "https://car-doctor-client-b927e.web.app/",
-      "https://car-doctor-client-b927e.firebaseapp.com/",
-      "https://car-cure-client.vercel.app/",
+      "https://car-doctor-client-b927e.web.app",
+      "https://car-doctor-client-b927e.firebaseapp.com",
+      "https://car-cure-client.vercel.app",
     ],
     credentials: true,
   })
