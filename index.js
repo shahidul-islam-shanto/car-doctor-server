@@ -87,8 +87,8 @@ async function run() {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: true,
-          sameSite: "none",
+          secure: process.env.NODE.ENV === "production" ? true : false,
+          sameSite: process.env.NODE.ENV === "production" ? "none" : "strict",
         })
         .send({ success: true });
     });
@@ -161,7 +161,7 @@ async function run() {
     /** service related api end */
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
