@@ -63,16 +63,16 @@ const verifyToken = (req, res, next) => {
   });
 };
 /**custom middleware end */
-let isConnected = false;
+// let isConnected = false;
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    if (!isConnected) {
-      await client.connect();
-      isConnected = true;
-    }
+    // if (!isConnected) {
+    //   await client.connect();
+    //   isConnected = true;
+    // }
 
     const serviceCollection = client.db("carDoctor").collection("services");
     const bookingCollection = client.db("carDoctor").collection("bookings");
